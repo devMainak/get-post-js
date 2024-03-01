@@ -39,7 +39,95 @@
   
   <script>
 
-  // const 
+  const userName = document.querySelector("#userName");
+    const userMessage = document.querySelector("#userMessage");
+    const messageForm = document.querySelector("#messageForm");
+    const responseContainer = document.querySelector("#responseContainer");
+    const getDataBtn = document.querySelector("#getDataBtn");
+    const showData = document.querySelector("#showData");
+
+    const apiUrl = 'https://posts-student-neog.replit.app/posts';
+
+    
+    getDataBtn.addEventListener("click", function(){
+      showData.innerHTML = ``;
+      
+      fetch(apiUrl)
+      .then(function(response){
+        return response.json();
+      })
+      .then(function(data){
+        if(data)
+        {
+          console.log(data);
+          for (let i = 0; i < data.length; i++)
+            {
+              const listItem = document.createElement('li');
+              
+              const card = document.createElement('div');
+              card.className = `card`;
+
+              const cardBody = document.createElement('div');
+              cardBody.className = `card-body`;
+
+              const cardTitle = document.createElement('h5');
+              cardTitle.className = `card-title`;
+              cardTitle.textContent = `Post ID: ${data[i]._id}`;
+
+              const cardResponse = document.createElement('p');
+              cardResponse.className = `card-text`;
+              cardResponse.textContent = JSON.stringify(data[i]);
+
+              cardBody.appendChild(cardTitle);
+              cardBody.appendChild(cardResponse);
+
+              card.appendChild(cardBody);
+
+              listItem.appendChild(card);
+              
+              showData.appendChild(listItem);
+            }
+        }
+      })
+      .catch(function errorHandler(){
+        showData.textContent = `Error occured while loading data!`
+      })
+    })
+    
+    
+    messageForm.addEventListener("submit", function(event){
+    event.preventDefault();
+
+      const requestData = {
+        name: userName.value,
+        message: userMessage.value
+      };
+
+      fetch(apiUrl, {
+        method: "POST",
+        body: JSON.stringify(requestData),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(function responseHandler(response){
+        return response.json();
+      })
+      .then(function showResponse(data){
+        if (data)
+        {
+          responseContainer.textContent = JSON.stringify(data);
+        }
+        else
+        {
+          responseContainer.textContent = `Failed to submit the message!`
+        }
+      })
+      .catch(function errorHandler(error){
+        responseContainer.textContent = `Error occured while making the fetch call!`
+      })
+    })
+    
     
   </script>
 </body>
